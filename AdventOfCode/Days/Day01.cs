@@ -12,7 +12,7 @@ namespace AdventOfCode.Days
             var val = input.Select(x => Convert.ToInt32(x)).ToArray();
             var inc = 0;
 
-            for (var i =1; i<val.Count(); i++) {
+            for (var i =1; i< val.Length; i++) {
                 if (val[i] > val[i-1]) {
                     inc++;
                 }
@@ -27,7 +27,7 @@ namespace AdventOfCode.Days
             var sums = new List<int>();
 
 
-            for (var i =2; i<val.Count(); i++) {
+            for (var i =2; i< val.Length; i++) {
                 sums.Add(val[i-2] + val[i-1] + val[i]);
             }
 
