@@ -32,7 +32,7 @@ public static class LinkedListExtensions
 
     public static LinkedListNode<T> NextOrFirst<T>(this LinkedListNode<T> item)
     {
-        return item.Next ?? item.List?.First;
+        return (item.Next ?? item.List?.First) ?? throw new InvalidOperationException();
     }
 
 }
