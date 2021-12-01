@@ -1,18 +1,15 @@
-using System;
-using System.Collections.Generic;
+namespace AdventOfCode.Common;
 
-namespace AdventOfCode.Common
+public static class ListExtensions
 {
-    public static class ListExtensions
+    public static int GetSequenceHashCode<T>(this IEnumerable<T> sequence)
     {
-        public static int GetSequenceHashCode<T>(this IEnumerable<T> sequence)
+        var hash = new HashCode();
+        foreach (var element in sequence)
         {
-            var hash = new HashCode();
-            foreach (var element in sequence)
-            {
-                hash.Add(element);
-            }
-            return hash.ToHashCode();
+            hash.Add(element);
         }
+
+        return hash.ToHashCode();
     }
 }
