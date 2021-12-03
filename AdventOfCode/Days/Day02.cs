@@ -29,7 +29,6 @@ public class Day02 : ISolution
                 {
                     verticalDistance -= distance;
                     break;
-
                 }
                 default:
                 {
@@ -70,7 +69,6 @@ public class Day02 : ISolution
                 {
                     aim -= distance;
                     break;
-
                 }
                 default:
                 {
