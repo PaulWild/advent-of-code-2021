@@ -2,13 +2,13 @@
 
 public static class DictionaryExtensions
 {
-    public static void AddOrUpdate<T,TU>(this Dictionary<T,TU> dictionary, T key, TU initialValue, Func<TU, TU> addFunction)
+    public static void AddOrUpdate<T,TU>(this Dictionary<T,TU> dictionary, T key, TU initialValue, Func<TU, TU> addFunction) where T : notnull
     {
         var hasValue = dictionary.TryGetValue(key, out var value);
 
         if (hasValue)
         {
-            dictionary[key] = addFunction(value!);
+            if (value != null) dictionary[key] = addFunction(value);
         }
         else
         {
