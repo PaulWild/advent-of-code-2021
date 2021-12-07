@@ -33,12 +33,8 @@ public class Day07 : ISolution
     private static int CalculateFuelPart2(int x, int position)
     {
         var steps = Math.Abs(x - position);
-        var sum = 0;
-        for (var i = 1; i <= steps; i++)
-        {
-            sum += i;
-        }
-        return sum;
+        //Triangular number calculation - my original solution brute forced it, I saw this after completing it
+        return steps * (steps + 1) / 2;
     }
 
     public int Day => 07;
