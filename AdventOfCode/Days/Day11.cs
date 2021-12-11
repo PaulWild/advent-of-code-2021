@@ -38,15 +38,12 @@ public class Day11 : ISolution
                 foreach (var neighbour in grid.AllNeighbours(flashingOctopus))
                 {
                     grid[neighbour] += 1;
-                }
-
-                foreach (var (key, value) in grid)
-                {
-                    if (value <= 9) continue;
-                    if (flashed.Contains(key)) continue;
                     
-                    toFlash.Enqueue(key);
-                    flashed.Enqueue(key);
+                    if (grid[neighbour] <= 9) continue;
+                    if (flashed.Contains(neighbour)) continue;
+                    
+                    toFlash.Enqueue(neighbour);
+                    flashed.Enqueue(neighbour);
                 }
             }
             
@@ -97,15 +94,12 @@ public class Day11 : ISolution
                 foreach (var neighbour in grid.AllNeighbours(flashingOctopus))
                 {
                     grid[neighbour] += 1;
-                }
-                
-                foreach (var (key, value) in grid)
-                {
-                    if (value <= 9) continue;
-                    if (flashed.Contains(key)) continue;
                     
-                    toFlash.Enqueue(key);
-                    flashed.Enqueue(key);
+                    if (grid[neighbour] <= 9) continue;
+                    if (flashed.Contains(neighbour)) continue;
+                    
+                    toFlash.Enqueue(neighbour);
+                    flashed.Enqueue(neighbour);
                 }
             }
             
