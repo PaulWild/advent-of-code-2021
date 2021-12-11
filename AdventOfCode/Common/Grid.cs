@@ -17,6 +17,18 @@ public static class Grid
             }
         }
     }
+    
+    public static IEnumerable<(int x, int y)> DirectNeighbours<T>(this Dictionary<(int x, int y), T> grid,
+        (int x, int y) location)
+    {
+        var (x, y) = location;
+        
+        if (grid.TryGetValue( (x, y - 1), out _)) yield return (x, y - 1);
+        if (grid.TryGetValue( (x, y + 1), out _)) yield return (x, y + 1);
+        if (grid.TryGetValue( (x - 1, y), out _)) yield return (x - 1, y);
+        if (grid.TryGetValue( (x + 1, y), out _)) yield return (x + 1, y);
+    }
+
     public static IEnumerable<(int x, int y, int z)> Neighbours3(int x, int y, int z)
     {
         for (var zNeighbour = z - 1; zNeighbour <= z + 1; zNeighbour++)
