@@ -16,6 +16,7 @@ public class Day10 : ISolution
             {
                 if (Open.Contains(bracket))
                 {
+                    
                     bracketStack.Push(bracket);
                 }
                 else

@@ -1,8 +1,22 @@
 
 namespace AdventOfCode.Common;
 
-public class Grid
+public static class Grid
 {
+    public static IEnumerable<(int x, int y)> AllNeighbours<T>(this Dictionary<(int x, int y), T> grid,
+        (int x, int y) location)
+    {
+        var (x, y) = location;
+        
+        for (var xNeighbour = x-1; xNeighbour <= x +1; xNeighbour++)
+        for (var yNeighbour = y - 1; yNeighbour <= y + 1; yNeighbour++)
+        {
+            if (!(xNeighbour == x && yNeighbour == y) && grid.TryGetValue( (xNeighbour, yNeighbour), out _))
+            {
+                yield return (xNeighbour, yNeighbour);
+            }
+        }
+    }
     public static IEnumerable<(int x, int y, int z)> Neighbours3(int x, int y, int z)
     {
         for (var zNeighbour = z - 1; zNeighbour <= z + 1; zNeighbour++)
