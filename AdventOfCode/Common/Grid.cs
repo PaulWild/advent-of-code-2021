@@ -23,10 +23,10 @@ public static class Grid
     {
         var (x, y) = location;
         
-        if (grid.TryGetValue( (x, y - 1), out _)) yield return (x, y - 1);
-        if (grid.TryGetValue( (x, y + 1), out _)) yield return (x, y + 1);
-        if (grid.TryGetValue( (x - 1, y), out _)) yield return (x - 1, y);
-        if (grid.TryGetValue( (x + 1, y), out _)) yield return (x + 1, y);
+        if (grid.ContainsKey((x, y - 1))) yield return (x, y - 1);
+        if (grid.ContainsKey((x, y + 1))) yield return (x, y + 1);
+        if (grid.ContainsKey((x - 1, y))) yield return (x - 1, y);
+        if (grid.ContainsKey((x + 1, y))) yield return (x + 1, y);
     }
 
     public static IEnumerable<(int x, int y, int z)> Neighbours3(int x, int y, int z)
