@@ -4,11 +4,17 @@ public class Day16 : ISolution
 {
     public enum Type
     {
-        Literal,
-        Operator
+        Sum=0,
+        Product=1,
+        Minimum=2,
+        Maximum=3,
+        Literal=4,
+        GreaterThan=5,
+        LessThan=6,
+        EqualTo=7
     };
     
-    private Dictionary<char, int[]> hexMap = new()
+    private readonly Dictionary<char, int[]> _hexMap = new()
     {
         { '0', new[] { 0, 0, 0, 0 } },
         { '1', new[] { 0, 0, 0, 1 } },
@@ -30,7 +36,7 @@ public class Day16 : ISolution
     
     public string PartOne(IEnumerable<string> input)
     {
-        var transmission = input.First().SelectMany(x => hexMap[x]).ToList();
+        var transmission = input.First().SelectMany(x => _hexMap[x]).ToList();
 
         var packet = Parse(transmission);
         return packet.VersionSum.ToString();
@@ -38,8 +44,10 @@ public class Day16 : ISolution
 
     public string PartTwo(IEnumerable<string> input)
     {
-        
-        throw new NotImplementedException();
+        var transmission = input.First().SelectMany(x => _hexMap[x]).ToList();
+
+        var packet = Parse(transmission);
+        return packet.Value.ToString();
     }
 
     public int  ParseVersion(List<int> transmission)
@@ -52,11 +60,7 @@ public class Day16 : ISolution
     public Type ParseType(List<int> transmission)
     {
         var typeInt = Convert.ToInt32(string.Join("", transmission.Take(3)), 2);
-        var type = typeInt switch
-        {
-            4 => Type.Literal,
-            _ => Type.Operator
-        };
+        var type = (Type)Enum.ToObject(typeof(Type), typeInt);
         
         transmission.RemoveRange(0, 3);
 
@@ -162,6 +166,8 @@ public class Day16 : ISolution
         public IReadOnlyList<IPacket> Nodes { get; }
         
         public int VersionSum { get; }
+        
+        public long Value { get;  }
     }
 
     public class Literal : IPacket
@@ -174,10 +180,14 @@ public class Day16 : ISolution
         }
 
         public int Version { get; }
+        
         public Type Type { get; }
 
         public IReadOnlyList<IPacket> Nodes => new List<IPacket>();
+        
         public int VersionSum => Version;
+
+        public long Value => LiteralValue;
 
         public long LiteralValue { get; }
     }
@@ -200,6 +210,25 @@ public class Day16 : ISolution
         }
         public IReadOnlyList<IPacket> Nodes => _nodes;
         public int VersionSum =>  Version + Nodes.Select(x => x.VersionSum).Sum();
+
+        public long Value
+        {
+            get
+            {
+                return Type switch
+                {
+                    Type.Sum => Nodes.Select(x => x.Value).Sum(),
+                    Type.Product => Nodes.Select(x => x.Value).Aggregate((agg,val) => agg * val),
+                    Type.Minimum => Nodes.Select(x => x.Value).Min(),
+                    Type.Maximum => Nodes.Select(x => x.Value).Max(),
+                    Type.Literal => throw new ArgumentOutOfRangeException(),
+                    Type.GreaterThan => Nodes[0].Value > Nodes[1].Value ? 1 : 0,
+                    Type.LessThan => Nodes[0].Value < Nodes[1].Value ? 1 : 0,
+                    Type.EqualTo => Nodes[0].Value == Nodes[1].Value ? 1 : 0,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+            }
+        }
     }
 
     

@@ -51,11 +51,19 @@ public class Day16Tests
         act.Should().NotThrow<NotImplementedException>();
     }
     
-    [Fact]
-    public void PartTwo_WhenCalled_ReturnsCorrectTestAnswer()
+    [Theory]
+    [InlineData("C200B40A82", "3")]
+    [InlineData("04005AC33890", "54")]
+    [InlineData("880086C3E88112", "7")]
+    [InlineData("CE00C43D881120", "9")]
+    [InlineData("D8005AC2A8F0", "1")]   
+    [InlineData("F600BC2D8F", "0")]
+    [InlineData("9C005AC2F8F0", "0")]
+    [InlineData("9C0141080250320F1802104A08", "1")]
+    public void PartTwo_WhenCalled_ReturnsCorrectTestAnswer(string transmission, string value)
     {
-        var actual = _sut.PartTwo(_testData);
+        var actual = _sut.PartTwo(new []{ transmission });
 
-        actual.Should().Be("SomeString");
+        actual.Should().Be(value);
     }
 }
