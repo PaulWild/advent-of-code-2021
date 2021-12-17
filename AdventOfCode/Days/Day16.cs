@@ -2,7 +2,7 @@ namespace AdventOfCode.Days;
 
 public class Day16 : ISolution
 {
-    public enum Type
+    private enum Type
     {
         Sum=0,
         Product=1,
@@ -50,14 +50,14 @@ public class Day16 : ISolution
         return packet.Value.ToString();
     }
 
-    public int  ParseVersion(List<int> transmission)
+    private static int ParseVersion(List<int> transmission)
     {
         var version = Convert.ToInt32(string.Join("", transmission.Take(3)), 2);
         transmission.RemoveRange(0,3);
         return version;
     }
 
-    public Type ParseType(List<int> transmission)
+    private static Type ParseType(List<int> transmission)
     {
         var typeInt = Convert.ToInt32(string.Join("", transmission.Take(3)), 2);
         var type = (Type)Enum.ToObject(typeof(Type), typeInt);
@@ -67,7 +67,7 @@ public class Day16 : ISolution
         return type;
     }
 
-    public (int version, Type type) ParseHeader(List<int> transmission)
+    private static (int version, Type type) ParseHeader(List<int> transmission)
     {
         var version  = ParseVersion(transmission);
         var type = ParseType(transmission);
@@ -75,76 +75,74 @@ public class Day16 : ISolution
         return (version, type);
     }
 
-    public int ParseLenghtType(List<int> transmission)
+    private static int ParseLenghtType(List<int> transmission)
     {
         var lengthType = transmission.Take(1).Single();
         transmission.RemoveRange(0, 1);
         return lengthType;
     }
 
-    public int  Parse0LengthType(List<int> transmission)
+    private static int Parse0LengthType(List<int> transmission)
     {
         var length = Convert.ToInt32(string.Join("", transmission.Take(15).ToList()), 2);
         transmission.RemoveRange(0, 15);
 
         return length;
-    } 
-    
-    public int Parse1LengthType(List<int> transmission)
+    }
+
+    private static int Parse1LengthType(List<int> transmission)
     {
         var count = Convert.ToInt32(string.Join("", transmission.Take(11).ToList()), 2);
         transmission.RemoveRange(0, 11);
 
         return count;
     }
-    
-    public IPacket Parse(List<int> transmission)
+
+    private IPacket Parse(List<int> transmission)
     {
         var (version, type) = ParseHeader(transmission);
         
         if (type == Type.Literal)
         {
             var literalValue = ParseLiteralValue(transmission);
-            return new Literal(version, type, literalValue);
+            return new Literal(version, literalValue);
+        }
+
+        var lengthType = ParseLenghtType(transmission);
+        var packet = new Operator(version, type);
+            
+        if (lengthType == 0)
+        {
+            var numberOfBits = Parse0LengthType(transmission);
+            var transmissionLeft = transmission.Count;
+            do
+            {
+                packet.AddNode(Parse(transmission));
+            } while (transmissionLeft-transmission.Count != numberOfBits);
         }
         else
         {
-            var lengthType = ParseLenghtType(transmission);
-            var packet = new Operator(version, type);
-            
-              if (lengthType == 0)
-              {
-                  var numberOfBits = Parse0LengthType(transmission);
-                  var transmissionLeft = transmission.Count;
-                  do
-                  {
-                      packet.AddNode(Parse(transmission));
-                  } while (transmissionLeft-transmission.Count != numberOfBits);
-              }
-              else
-              {
-                 var numberOfSubPackets = Parse1LengthType(transmission);
-                 for (int i = 0; i < numberOfSubPackets; i++)
-                 {
-                     packet.AddNode(Parse(transmission));
-                 }
+            var numberOfSubPackets = Parse1LengthType(transmission);
+            for (var i = 0; i < numberOfSubPackets; i++)
+            {
+                packet.AddNode(Parse(transmission));
+            }
                  
-              }
-
-              return packet;
         }
+
+        return packet;
     }
-    
-    public long ParseLiteralValue(List<int> transmission)
+
+    private static long ParseLiteralValue(List<int> transmission)
     {
-        bool lastDigit = false;
-        int num = 0;
+        var lastDigit = false;
+        var num = 0;
         var binaryNumber = new List<int>();
 
         while (!lastDigit)
         {
             var section = transmission.Skip(num * 5).Take(5).ToList();
-            lastDigit = section[0] == 0 ? true : false;
+            lastDigit = section[0] == 0;
             
             binaryNumber.AddRange(section.Skip(1));
             num++;
@@ -158,57 +156,52 @@ public class Day16 : ISolution
         return decimalNumber;
     }
 
-    public interface IPacket
+    private interface IPacket
     {
-        public int Version { get; }
-        public Type Type { get; }
-        
-        public IReadOnlyList<IPacket> Nodes { get; }
-        
         public int VersionSum { get; }
         
         public long Value { get;  }
     }
 
-    public class Literal : IPacket
+    private class Literal : IPacket
     {
-        public Literal(int version, Type type, long literalValue)
+        public Literal(int version, long literalValue)
         {
-            Type = type;
             Version = version;
             LiteralValue = literalValue;
         }
 
-        public int Version { get; }
-        
-        public Type Type { get; }
+        private int Version { get; }
 
-        public IReadOnlyList<IPacket> Nodes => new List<IPacket>();
-        
         public int VersionSum => Version;
 
         public long Value => LiteralValue;
 
-        public long LiteralValue { get; }
+        private long LiteralValue { get; }
     }
-    
-    public class Operator : IPacket
+
+    private class Operator : IPacket
     {
 
-        private List<IPacket> _nodes = new List<IPacket>();
+        private readonly List<IPacket> _nodes = new();
+        
         public Operator(int version, Type type)
         {
             Type = type;
             Version = version;
         }
 
-        public int Version { get; }
-        public Type Type { get; }
+        private int Version { get; }
+        
+        private Type Type { get; }
+        
         public void AddNode(IPacket node)
         {
             _nodes.Add(node);
         }
-        public IReadOnlyList<IPacket> Nodes => _nodes;
+
+        private IReadOnlyList<IPacket> Nodes => _nodes;
+        
         public int VersionSum =>  Version + Nodes.Select(x => x.VersionSum).Sum();
 
         public long Value
